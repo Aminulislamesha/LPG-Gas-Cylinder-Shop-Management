@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LPG Shop Management</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>LPG Gas Cylinder Shop Management</h1>
+    </header>
+
+    <nav>
+      <a href="#dashboard" class="nav-link active">Dashboard</a>
+      <a href="#stock" class="nav-link">Stock</a>
+      <a href="#vendors" class="nav-link">Vendors</a>
+      <a href="#sales" class="nav-link">Sales</a>
+      <a href="#expenses" class="nav-link">Expenses</a>
+      <a href="#reports" class="nav-link">Sales Reports</a>
+    </nav>
+
+    <main>
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="page active">
+        <h2>Dashboard</h2>
+        <div class="dashboard-grid">
+          <div class="metric">
+            <h3>Today's Total Sale</h3>
+            <p>BDT <span id="todays-total-sale">0.00</span></p>
+          </div>
+          <div class="metric">
+            <h3>Today's Cylinders Sold</h3>
+            <p id="todays-cylinders-sold">0</p>
+          </div>
+          <div class="metric">
+            <h3>Cylinders to Collect (Total)</h3>
+            <p id="cylinders-to-collect">0</p>
+          </div>
+          <div class="metric">
+            <h3>Total Outstanding Dues</h3>
+            <p>BDT <span id="total-outstanding-dues">0.00</span></p>
+          </div>
+        </div>
+
+        <div class="dashboard-columns">
+          <div class="dashboard-column">
+            <h3>Vendor-wise Sales (Today)</h3>
+            <div class="table-wrapper">
+              <table id="vendor-sales-table">
+                <thead>
+                  <tr>
+                    <th>Vendor</th>
+                    <th>Cylinders Sold</th>
+                    <th>Total Sales</th>
+                  </tr>
+                </thead>
+                <tbody id="vendor-sales-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="dashboard-column">
+            <h3>Stock Summary</h3>
+            <div class="table-wrapper">
+              <table id="dashboard-stock-table">
+                <thead>
+                  <tr>
+                    <th>Cylinder</th>
+                    <th>Quantity Left</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-stock-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stock Management Section -->
+      <section id="stock" class="page">
+        <h2>Stock Management</h2>
+        <form id="stock-form">
+          <input
+            type="text"
+            id="stock-brand"
+            placeholder="Cylinder Brand"
+            required
+          />
+          <input
+            type="number"
+            id="stock-weight"
+            placeholder="Weight (kg)"
+            required
+          />
+          <input
+            type="number"
+            id="stock-quantity"
+            placeholder="Quantity"
+            required
+          />
+          <input
+            type="number"
+            id="stock-cost-price"
+            placeholder="Cost Price per unit (BDT)"
+            step="0.01"
+            required
+          />
+          <input
+            type="number"
+            id="stock-sale-price"
+            placeholder="Default Sale Price per unit (BDT)"
+            step="0.01"
+            required
+          />
+          <button type="submit">Add/Update Stock</button>
+        </form>
+        <div class="table-wrapper">
+          <table id="stock-table">
+            <thead>
+              <tr>
+                <th>Brand</th>
+                <th>Weight (kg)</th>
+                <th>Quantity</th>
+                <th>Cost Price</th>
+                <th>Sale Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="stock-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Vendor Management Section -->
+      <section id="vendors" class="page">
+        <h2>Vendor Management</h2>
+        <form id="vendor-form">
+          <input
+            type="text"
+            id="vendor-name"
+            placeholder="Vendor Name"
+            required
+          />
+          <input type="text" id="vendor-contact" placeholder="Contact Person" />
+          <input
+            type="tel"
+            id="vendor-phone"
+            placeholder="Phone Number"
+            required
+          />
+          <button type="submit">Add Vendor</button>
+        </form>
+        <div class="search-wrapper">
+          <input
+            type="text"
+            id="vendor-list-search"
+            placeholder="Search Vendors by Name or Phone..."
+          />
+        </div>
+        <div class="table-wrapper">
+          <table id="vendor-table">
+            <thead>
+              <tr>
+                <th>Vendor Name</th>
+                <th>Phone</th>
+                <th>Dues</th>
+                <th>Cylinders to Collect</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="vendor-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Sales Tracking Section -->
+      <section id="sales" class="page">
+        <h2>Record a Sale</h2>
+        <form id="sales-form">
+          <div class="autocomplete">
+            <input
+              type="text"
+              id="sales-vendor-search"
+              placeholder="Search Vendor by Name or Phone"
+              required
+            />
+            <div id="vendor-search-results" class="autocomplete-items"></div>
+          </div>
+          <input type="hidden" id="selected-vendor-id" />
+          <button
+            type="button"
+            id="add-new-vendor-btn"
+            class="secondary-btn"
+            style="display: none"
+          >
+            Add New Vendor
+          </button>
+
+          <select id="sales-cylinder" required>
+            <option value="">-- Select Cylinder --</option>
+          </select>
+          <input
+            type="number"
+            id="sales-quantity"
+            placeholder="Quantity Sold"
+            required
+            min="1"
+          />
+
+          <div class="custom-rate-section">
+            <div>
+              <input type="checkbox" id="use-custom-rate" />
+              <label for="use-custom-rate">Use Custom Sale Rate</label>
+            </div>
+            <div id="custom-rate-input-container" style="display: none">
+              <input
+                type="number"
+                id="custom-sale-rate"
+                placeholder="Custom Rate (BDT)"
+                step="0.01"
+              />
+              <div>
+                <input type="checkbox" id="always-apply-rate" />
+                <label for="always-apply-rate"
+                  >Always apply this rate for this vendor</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="price-display">
+            Calculated Price: <strong id="calculated-price">BDT 0.00</strong>
+          </div>
+
+          <input
+            type="number"
+            id="paid-amount"
+            placeholder="Paid Amount (BDT)"
+            step="0.01"
+            required
+          />
+          <input
+            type="number"
+            id="goted-cylinder-count"
+            placeholder="Goted/Returned Cylinder Count"
+            min="0"
+          />
+          <input
+            type="text"
+            id="sales-customer"
+            placeholder="Customer Name/Phone (Optional)"
+          />
+          <button type="submit">Record Sale</button>
+        </form>
+
+        <hr style="margin: 40px 0" />
+
+        <h2>Recent Sales History</h2>
+        <div class="filter-wrapper">
+          <select id="sales-history-filter">
+            <option value="all-time">All Time</option>
+            <option value="daily">Today</option>
+            <option value="weekly">Last 7 Days</option>
+            <option value="monthly">Last 30 Days</option>
+            <option value="custom">Custom Range</option>
+          </select>
+          <div id="sales-history-custom-range" style="display: none">
+            <input type="date" id="sales-history-start-date" />
+            <input type="date" id="sales-history-end-date" />
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="sales-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Vendor</th>
+                <th>Quantity</th>
+                <th>Cylinders to Collect</th>
+                <th>Total Amount</th>
+                <th>Due Amount</th>
+                <th>Profit</th>
+              </tr>
+            </thead>
+            <tbody id="sales-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Expense Management Section -->
+      <section id="expenses" class="page">
+        <h2>Expense Management</h2>
+        <form id="expense-form">
+          <input
+            type="text"
+            id="expense-type"
+            placeholder="Expense Type (e.g., Rent, Salary)"
+            required
+          />
+          <input
+            type="number"
+            id="expense-amount"
+            placeholder="Amount (BDT)"
+            step="0.01"
+            required
+          />
+          <textarea id="expense-desc" placeholder="Description"></textarea>
+
+          <div class="custom-rate-section">
+            <div>
+              <input type="checkbox" id="is-vendor-expense" />
+              <label for="is-vendor-expense"
+                >Is this a vendor-related expense?</label
+              >
+            </div>
+            <div id="expense-vendor-search-container" style="display: none">
+              <div class="autocomplete">
+                <input
+                  type="text"
+                  id="expense-vendor-search"
+                  placeholder="Search Vendor by Name or Phone"
+                />
+                <div
+                  id="expense-vendor-search-results"
+                  class="autocomplete-items"
+                ></div>
+              </div>
+              <input type="hidden" id="expense-selected-vendor-id" />
+            </div>
+          </div>
+
+          <button type="submit">Add Expense</button>
+        </form>
+        <div class="table-wrapper">
+          <table id="expense-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Associated Vendor</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="expense-table-body"></tbody>
+          </table>
+        </div>
+
+        <hr style="margin: 40px 0" />
+
+        <h2>Generate Expense Reports</h2>
+        <form id="expense-report-form">
+          <select id="expense-report-type">
+            <option value="all-time">All Time</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="custom">Custom Range</option>
+          </select>
+          <div id="expense-custom-date-range" style="display: none">
+            <input type="date" id="expense-start-date" />
+            <input type="date" id="expense-end-date" />
+          </div>
+          <select id="expense-report-vendor">
+            <option value="all">All Expenses</option>
+            <option value="general">General Shop Expenses Only</option>
+          </select>
+          <button type="submit">Generate Expense Report</button>
+        </form>
+        <div id="expense-report-results" style="display: none">
+          <h3>Expense Report Summary</h3>
+          <div class="dashboard-grid">
+            <div class="metric">
+              <h4>Total Expenses</h4>
+              <p>BDT <span id="report-total-expenses">0.00</span></p>
+            </div>
+          </div>
+          <h3>Detailed Expense Report</h3>
+          <div class="table-wrapper">
+            <table id="expense-report-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Associated Vendor</th>
+                  <th>Amount</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody id="expense-report-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sales Reports Section -->
+      <section id="reports" class="page">
+        <h2>Generate Sales Reports</h2>
+        <form id="report-form">
+          <select id="report-type">
+            <option value="all-time">All Time</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="custom">Custom Range</option>
+          </select>
+          <div id="custom-date-range" style="display: none">
+            <input type="date" id="start-date" />
+            <input type="date" id="end-date" />
+          </div>
+          <select id="report-vendor">
+            <option value="all">All Vendors</option>
+          </select>
+          <button type="submit">Generate Report</button>
+        </form>
+        <div id="report-results" style="display: none">
+          <h3>Report Summary</h3>
+          <div class="dashboard-grid">
+            <div class="metric">
+              <h4>Total Sales</h4>
+              <p>BDT <span id="report-total-sales">0.00</span></p>
+            </div>
+            <div class="metric">
+              <h4>Total Outstanding Dues</h4>
+              <p>BDT <span id="report-total-dues">0.00</span></p>
+            </div>
+            <div class="metric">
+              <h4>Total Cylinders Sold</h4>
+              <p id="report-total-cylinders-sold">0</p>
+            </div>
+            <div class="metric">
+              <h4>Total Cylinders to Collect</h4>
+              <p id="report-cylinders-to-collect">0</p>
+            </div>
+            <div class="metric">
+              <h4>Total Profit</h4>
+              <p>BDT <span id="report-total-profit">0.00</span></p>
+            </div>
+          </div>
+          <h3>Detailed Report</h3>
+          <div class="table-wrapper">
+            <table id="report-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Vendor</th>
+                  <th>Quantity</th>
+                  <th>Cylinders to Collect</th>
+                  <th>Total Amount</th>
+                  <th>Due Amount</th>
+                  <th>Profit</th>
+                </tr>
+              </thead>
+              <tbody id="report-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="edit-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Edit Item</h2>
+        <form id="edit-form"></form>
+      </div>
+    </div>
+
+    <div id="vendor-summary-modal" class="modal">
+      <div class="modal-content large">
+        <span class="close-btn">&times;</span>
+        <h2 id="summary-vendor-name">Vendor Summary</h2>
+        <div id="vendor-summary-content"></div>
+      </div>
+    </div>
+
+    <div id="due-payment-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Update Due Payment</h2>
+        <form id="due-payment-form">
+          <p>Vendor: <strong id="due-vendor-name"></strong></p>
+          <p>Current Due: <strong id="due-current-amount"></strong></p>
+          <input
+            type="number"
+            id="due-payment-amount"
+            placeholder="Enter Payment Amount (BDT)"
+            required
+          />
+          <button type="submit">Update Payment</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="cylinder-return-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Update Returned Cylinders</h2>
+        <form id="cylinder-return-form">
+          <p>Vendor: <strong id="return-vendor-name"></strong></p>
+          <p>
+            Cylinders to Collect:
+            <strong id="return-cylinders-to-collect"></strong>
+          </p>
+          <input
+            type="number"
+            id="returned-cylinder-count"
+            placeholder="Enter Number of Cylinders Returned"
+            required
+            min="1"
+          />
+          <button type="submit">Update Returns</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
