@@ -126,7 +126,7 @@ function attachAllListeners() {
     // Listen for changes to calculate sales total
     safeAddListener('sales-quantity', 'input', calculateAndDisplaySaleTotal);
     safeAddListener('custom-sale-rate', 'input', calculateAndDisplaySaleTotal);
-    safeAddListener('sales-cylinder', 'change', calculateAndDisplaySaleTotal);
+    safeAddListener('sales-cylinder', 'change', checkCustomRate); // <-- MODIFIED LINE
     
     safeAddListener('selected-vendor-id', 'change', checkCustomRate);
 
